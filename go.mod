@@ -1,3 +1,3 @@
-module github.com/BlaynDrew414/weather-scraper
+module example.com/weather-scraper
 
 go 1.19
