@@ -9,6 +9,7 @@ import (
 	"os"
 	"regexp"
 	"strings"
+	
 )
 
 const (
@@ -38,13 +39,19 @@ type currentConditions []struct {
 }
 
 func main() {
+
+	http.HandleFunc("/weather", handleWeatherRequest)
+    http.Handle("/", http.FileServer(http.Dir(".")))
 	scanner := bufio.NewScanner(os.Stdin)
+    http.ListenAndServe(":8080", nil)
+	
+	
 
 	fmt.Print("Enter City: ")
 	scanner.Scan()
 	city := scanner.Text()
 
-	fmt.Print("Enter State: ")
+	fmt.Print("Enter State or Country: ")
 	scanner.Scan()
 	state := scanner.Text()
 
@@ -67,6 +74,7 @@ func main() {
 	}
 
 	fmt.Printf("The temperature in %s, %s is %.1f°C and the current weather condition is %s.\n", city, state, weather[0].Temperature.Metric.Value, weather[0].WeatherText)
+	
 }
 
 // Check if the user input is valid
@@ -83,6 +91,72 @@ func isValidInput(city, state string) bool {
 
 	return true
 }
+
+func handleWeatherRequest(w http.ResponseWriter, r *http.Request) {
+    // Check if the request method is POST
+    if r.Method != "POST" {
+        http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+        return
+    }
+
+    // Decode the request body into a map
+    var requestBody map[string]string
+    err := json.NewDecoder(r.Body).Decode(&requestBody)
+    if err != nil {
+        http.Error(w, "Bad request", http.StatusBadRequest)
+        return
+    }
+
+    // Get the city and state from the request body
+    city, ok := requestBody["city"]
+    if !ok || city == "" {
+        http.Error(w, "City is required", http.StatusBadRequest)
+        return
+    }
+
+    state, ok := requestBody["state"]
+    if !ok || state == "" {
+        http.Error(w, "State is required", http.StatusBadRequest)
+        return
+    }
+
+    // Check if the user input is valid
+    if !isValidInput(city, state) {
+        http.Error(w, "Invalid input. Please enter a valid city and state.", http.StatusBadRequest)
+        return
+    }
+
+    locationKey, err := getLocationKey(city, state)
+    if err != nil {
+        http.Error(w, fmt.Sprintf("Error: %v", err), http.StatusInternalServerError)
+        return
+    }
+
+    weather, err := getCurrentConditions(locationKey)
+    if err != nil {
+        http.Error(w, fmt.Sprintf("Error: %v", err), http.StatusInternalServerError)
+        return
+    }
+
+    // Construct the response JSON
+    response := map[string]interface{}{
+        "city":     city,
+        "state":    state,
+        "temp":     weather[0].Temperature.Metric.Value,
+        "condition": weather[0].WeatherText,
+    }
+    jsonResponse, err := json.Marshal(response)
+    if err != nil {
+        http.Error(w, "Internal server error", http.StatusInternalServerError)
+        return
+    }
+
+    // Write the response back to the client
+    w.Header().Set("Content-Type", "application/json")
+    w.Write(jsonResponse)
+}
+
+
 
 func getLocationKey(city, state string) (string, error) {
 	location := fmt.Sprintf("%s, %s", strings.TrimSpace(city), strings.TrimSpace(state))
