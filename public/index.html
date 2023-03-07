@@ -31,7 +31,8 @@
                     </div>
                 </div>
             </div>
-            <button type="submit" class="btn btn-primary">Get Weather</button>
+            <button type="submit" class="btn btn-primary mt-3">Get Weather</button>
+
         </form>
         <div id="weather-results"></div>
     </div>
@@ -41,37 +42,38 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-        $(document).ready(function() {
-            // Handle form submission
-            $("#weather-form").submit(function(event) {
-                event.preventDefault(); // prevent default form submit behavior
+        $(document).ready(function () {
+    // Handle form submission
+    $("#weather-form").submit(function (event) {
+        event.preventDefault(); // prevent default form submit behavior
 
-                // Get form data
-                var city = $("#city").val();
-                var state = $("#state").val();
+        // Get form data
+        var city = $("#city").val();
+        var state = $("#state").val();
 
-                // Make POST request to backend
-                fetch("/weather", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        city: city,
-                        state: state
-                    })
-                })
-                .then(response => response.text())
-                .then(data => {
-                    // Display weather results
-                    $("#weather-results").html(data);
-                })
-                .catch(error => {
-                    console.error(error);
-                    $("#weather-results").html("An error occurred. Please try again later.");
-                });
+        // Make POST request to backend
+        fetch("/weather", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                city: city,
+                state: state
+            })
+        })
+            .then(response => response.json()) // parse response as JSON
+            .then(data => {
+                // Display weather results
+                var message = "The temperature in " + data.city + ", " + data.state + " is " + data.temp + "°F and the current weather condition is " + data.condition + ".";
+                $("#weather-results").html("<div class='alert alert-success'>" + message + "</div>");
+            })
+            .catch(error => {
+                console.error(error);
+                $("#weather-results").html("<div class='alert alert-danger'>An error occurred. Please try again later.</div>");
             });
-        });
+    });
+});
     </script>
 </body>
 
