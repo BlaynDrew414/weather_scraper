@@ -32,7 +32,7 @@ func TestGetLocationKey(t *testing.T) {
 	// Test with valid city and state inputs
 	city := "San Francisco"
 	state := "CA"
-	locationKey, err := getLocationKey(city, state)
+	locationKey, err := GetLocationKey(city, state)
 	if err != nil {
 		t.Errorf("Expected no error, but got %v", err)
 	}
@@ -43,7 +43,7 @@ func TestGetLocationKey(t *testing.T) {
 	// Test with invalid city and state inputs
 	city = "Invalid City"
 	state = "Invalid State"
-	locationKey, err = getLocationKey(city, state)
+	locationKey, err = GetLocationKey(city, state)
 	if err == nil {
 		t.Errorf("Expected an error, but got none")
 	}
