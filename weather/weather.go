@@ -39,11 +39,11 @@ func GetLocationKey(city, state string) (string, error) {
 	}
 
 	if err := json.NewDecoder(resp.Body).Decode(&locationResp); err != nil {
-		return "", fmt.Errorf("failed to decode JSON response: %v", err)
+		return "", fmt.Errorf("failed to decode JSON response: %w", err)
 	}
 
 	if len(locationResp) < 1 {
-		return "", fmt.Errorf("no city/state found for %s, %s", city, state)
+		return "", fmt.Errorf("no city/state found for %w, %w", city, state)
 	}
 
 	return locationResp[0].Key, nil
@@ -54,7 +54,7 @@ func GetCurrentConditions(locationKey string) (models.CurrentConditions, error) 
 
 	resp, err := http.Get(url)
 	if err != nil {
-		return models.CurrentConditions{}, fmt.Errorf("HTTP request failed: %v", err)
+		return models.CurrentConditions{}, fmt.Errorf("HTTP request failed: %w", err)
 	}
 
 	defer resp.Body.Close()
@@ -66,7 +66,7 @@ func GetCurrentConditions(locationKey string) (models.CurrentConditions, error) 
 	var weatherResp []models.CurrentConditions
 
 	if err := json.NewDecoder(resp.Body).Decode(&weatherResp); err != nil {
-		return models.CurrentConditions{}, fmt.Errorf("failed to decode JSON response: %v", err)
+		return models.CurrentConditions{}, fmt.Errorf("failed to decode JSON response: %w", err)
 	}
 
 	if len(weatherResp) < 1 {

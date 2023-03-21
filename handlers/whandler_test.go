@@ -33,6 +33,7 @@ func TestHandleWeatherRequest(t *testing.T) {
 			expectedStatus:  http.StatusOK,
 			expectedMessage: "",
 		},
+		
 		//lowercase city and state
 		{
 			name:            "Success Case",
