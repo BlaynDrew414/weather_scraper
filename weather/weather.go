@@ -43,7 +43,7 @@ func GetLocationKey(city, state string) (string, error) {
 	}
 
 	if len(locationResp) < 1 {
-		return "", fmt.Errorf("no city/state found for %w, %w", city, state)
+		return "", fmt.Errorf("no city/state found for %s, %s", city, state)
 	}
 
 	return locationResp[0].Key, nil
