@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	apiKey      = "9p3ELusMaMlbU4fJF79K97c4iQjp7Zq6"
+	apiKey      = "APIKey"
 	locationURL = "http://dataservice.accuweather.com/locations/v1/cities/search"
 	currentURL  = "http://dataservice.accuweather.com/currentconditions/v1/%s?apikey=%s&details=true&imperial=true"
 )
